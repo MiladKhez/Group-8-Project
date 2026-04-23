@@ -15,17 +15,18 @@
 % visualize(crossFilt);
 % parameterTuner(crossFilt);
 
-% %Establish audion input port **NOTE: Computer must have access to both (2) stereo
-%channels to run program
 clear all; clc;
 
+% %Establish audion input port **NOTE: Computer must have access to both (2) stereo
+%channels to run program
 deviceReader = audioDeviceReader('SampleRate',44100,'NumChannels',2, 'SamplesPerFrame',1024);%establishes the computer mic as the input reader
 
-[y,fs] = audioread('Replay_I_Y_A_Z_Naijapals.mp3');
+%find music file and read audio data
+[y,fs] = audioread('Zodiac.wav');
 player = audioplayer(y, fs);
+Audiolook = dsp.AudioFileReader('Zodiac.wav','SamplesPerFrame',1024, 'OutputDataType','double');
 
-
-Void = nan;
+Void = nan; %filler for empty inital plot when plot is initalized below
 
 V = 'void';
 while V ~= "AROUND" || V~= "SONG"
@@ -40,26 +41,29 @@ end
 
 if V == "SONG"
 
-play(player);
-
 
 figure
-h = plot(Void, Void, '.');%create plot 
+h = plot(nan, nan, '.');%create plot 
 axis([-1 1 -1 1]);%keep range/domain small when using computer input mic (also when normalize is off)
 xlabel('left channel')
 ylabel('right channel')
 title('See The Sound')
-
+grid on
+play(player)
 while true
     % fr = matlab.io.datastore.DsFileReader('Replay_I_Y_A_Z_Naijapals.mp3')
-    audioFrame = player()
+    audioFrame = Audiolook()
     % deviceWriter(audioFrame);
 
     %Normalize??
     % audioFrame = audsioFrame/ max(abs(audioFrame(:)) + 1e-6)
+ 
+% x = audioFrame(:,1);
+% y = audioFrame(:,2);
+
+    % addpoints(an,x,y)
 
     set(h, 'Xdata', audioFrame(:,1), 'Ydata', audioFrame(:,2));
-
     drawnow limitrate
 end
 end
