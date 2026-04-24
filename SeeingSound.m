@@ -1,7 +1,13 @@
 %======================================
 %Audio Filter and Visualizer:
 %This program takes live audio as an input composed of both amplitude and
-%frequency. The program then produces a live plot of the data as the right stereo channel vs the left stereo channel.
+%frequency. The program then produces a live plot of the data as the right
+%stereo channel vs the left stereo channel. 
+%Another feature of this program is the visualization of audio files. When
+%prompted, type "song" to visualize audio file. The name of your audio file
+%must be downloaded on your device and in the same pathway as the program
+%file. The name of the file must also be listed in 2 sections in the code
+%below (currently filled by "Dancer.wav").
 
 clear all; clc;
 
@@ -9,10 +15,11 @@ clear all; clc;
 %channels to run program
 deviceReader = audioDeviceReader('SampleRate',44100,'NumChannels',2, 'SamplesPerFrame',1024);%establishes the computer mic as the input reader
 
-%find music file and read audio data
-[y,fs] = audioread('Zodiac.wav');
-player = audioplayer(y, fs);
-Audiolook = dsp.AudioFileReader('Zodiac.wav','SamplesPerFrame',1024, 'OutputDataType','double');
+%audioread function find music file and read audio data
+[y,fs] = audioread('Dancer.wav');
+player = audioplayer(y, fs); 
+Audiolook = dsp.AudioFileReader('Dancer.wav','SamplesPerFrame',1024, 'OutputDataType','double'); %AudioFileReader establishes constraints for reading of audio file.
+%creates a 1x2 matrix of audio data from seperate x and y channels.
 
 Void = nan; %filler for empty inital plot when plot is initalized below
 
@@ -30,19 +37,20 @@ end
 if V == "SONG"
 
 
-figure
-h = plot(nan, nan, '.');%create plot 
+figure %create figure window
+h = plot(Void, Void, '.');%create plot 
 axis([-1 1 -1 1]);%keep range/domain small when using computer input mic
 xlabel('left channel')
 ylabel('right channel')
 title('See The Sound')
 grid on
 play(player)
-while true
+while true %loop updates figure data as long as audio file is playing
     audioFrame = Audiolook()
 
-    set(h, 'Xdata', audioFrame(:,1), 'Ydata', audioFrame(:,2));
-    drawnow limitrate
+    set(h, 'Xdata', audioFrame(:,1), 'Ydata', audioFrame(:,2)); %update plot data (new frame)
+   
+    drawnow %Update visible plot with new data
 end
 end
 
@@ -60,6 +68,6 @@ while true
 
     set(h, 'Xdata', audioFrame(:,1), 'Ydata', audioFrame(:,2));
 
-    drawnow limitrate
+    drawnow 
 end
 end
